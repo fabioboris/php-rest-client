@@ -19,6 +19,19 @@ class RestClient
     }
 
     /**
+     * Returns the absolute URL
+     * 
+     * @param string $url
+     */
+    private function url($url = null)
+    {
+        $_host = rtrim($this->host, '/');
+        $_url = ltrim($url, '/');
+
+        return "{$_host}/{$_url}";
+    }
+
+    /**
      * Make an HTTP request using cURL
      * 
      * @param string $verb
