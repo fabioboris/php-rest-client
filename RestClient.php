@@ -64,6 +64,48 @@ class RestClient
      */
     private function request($verb, $url, $params = null)
     {
+        $ch = curl_init();       // the cURL handler
+        $url = $this->url($url); // the absolute URL
+
+        // encoded query string on GET and DELETE
+        switch ($verb) {
+            case 'GET':
+            case 'DELETE':
+            $url = $this->urlQueryString($url, $params);
+        }
+
+        // set the URL
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+        // username and password when supplied
+        if ($this->user and $this->pwd) {
+            curl_setopt($ch, CURLOPT_USERPWD, "{$this->user}:{$this->pwd}");
+        }
+
+        // set the HTTP verb for the request
+        switch ($verb) {
+            case 'POST':
+            curl_setopt($ch, CURLOPT_POST, true);
+            break;
+            case 'PUT':
+            case 'DELETE':
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $verb);
+        }
+
+        // set the input params
+        switch ($verb) {
+            case 'POST':
+            case 'PUT':
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+        }
+
+        // will return the response content as a string
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $response = curl_exec($ch); // the response content
+        curl_close($ch);            // close the cURL handler
+
+        return $response;
     }
 
     /**
