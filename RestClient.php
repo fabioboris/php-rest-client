@@ -32,6 +32,30 @@ class RestClient
     }
 
     /**
+     * Returns the URL with encoded query string params
+     * 
+     * @param string $url
+     * @param array $params
+     */
+    private function urlQueryString($url, $params)
+    {
+        $qs = array();
+        if ($params) {
+            foreach ($params as $key => $value) {
+                $qs[] = "{$key}=" . urlencode($value);
+            }
+        }
+
+        $url = explode('?', $url);
+        if ($url[1]) $url_qs = $url[1];
+        $url = $url[0];
+        if ($url_qs) $url = "{$url}?{$url_qs}";
+
+        if (count($qs)) return "{$url}?" . implode('&', $qs);
+        else return $url;
+    }
+
+    /**
      * Make an HTTP request using cURL
      * 
      * @param string $verb
